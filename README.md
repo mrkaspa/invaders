@@ -1,12 +1,16 @@
 # invaders
 
-FIXME: Write a one-line description of your library/project.
+Clojurescript port of Mary Rose Cook's Space Invaders livecode talk - https://vimeo.com/105955605 and https://github.com/maryrosecook/annotated-code/tree/master/space-invaders
 
-## Overview
+## Setup in repl
 
-FIXME: Write a paragraph about the library/project and highlight its goals.
+```
+(use 'figwheel-sidecar.repl-api)
+(start-figwheel!)
+(cljs-repl)
+```
 
-## Setup
+## Setup outside repl
 
 To get an interactive development environment run:
 
