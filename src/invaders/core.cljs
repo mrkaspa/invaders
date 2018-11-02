@@ -1,6 +1,4 @@
-(ns invaders.core
-  (:require ))
-
+(ns invaders.core)
 
 (enable-console-print!)
 
