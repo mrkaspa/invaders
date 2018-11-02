@@ -5,9 +5,7 @@ Clojurescript port of Mary Rose Cook's Space Invaders livecode talk - https://vi
 ## Setup in repl
 
 ```
-(use 'figwheel-sidecar.repl-api)
-(start-figwheel!)
-(cljs-repl)
+(use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl)
 ```
 
 ## Setup outside repl
@@ -34,7 +32,7 @@ To create a production build run:
     lein do clean, cljsbuild once min
 
 And open your browser in `resources/public/index.html`. You will not
-get live reloading, nor a REPL. 
+get live reloading, nor a REPL.
 
 ## License
 

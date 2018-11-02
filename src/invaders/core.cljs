@@ -14,13 +14,24 @@
   [screen x y w h]
   (.fillRect screen x y w h))
 
+(defn draw-circle
+  [screen x y r]
+  (doto screen
+    (.beginPath)
+    (.arc x y r 0 (* 2 Math/PI))
+    (.closePath)
+    (.fill)))
+
 (defn draw
   "Draw an entity to the (global) screen"
-  [{:keys [x y width] :as entity}]
-  (draw-rect screen
-             (- x (/ width 2))
-             (- y (/ width 2))
-             width width))
+  [{:keys [type x y width] :as entity}]
+  (case type
+    :player (draw-circle screen x y 7)
+    :bullet (draw-circle screen x y 2)
+    (draw-rect screen
+               (- x (/ width 2))
+               (- y (/ width 2))
+               width width)))
 
 ;; --- Keyboard ---
 
@@ -74,10 +85,7 @@
                (:width entity))
             (- (:y entity)
                (:width entity)))]
-
-
-
-    (add-entity! (make-bullet x y velocity-x velocity-y)) 
+    (add-entity! (make-bullet x y velocity-x velocity-y))
     entity))
 
 (defmethod update-entity :bullet
@@ -96,12 +104,12 @@
    :speed-x 1})
 
 (defmethod update-entity :player
-  [{:keys [speed-x] :as player}]
+  [{:keys [x speed-x] :as player}]
   (cond-> player
-    (key-down? left)
+    (and (key-down? left) (> x 15))
     (update :x #(- % speed-x))
 
-    (key-down? right)
+    (and (key-down? right) (< x 285))
     (update :x #(+ % speed-x))
 
     (key-down? space)
@@ -165,9 +173,7 @@
           (+ (:x b) (/ (:width b)) 2))
 
        (> (- (:y a) (/ (:width a)) 2)
-          (+ (:y b) (/ (:width b)) 2))
-
-       )))
+          (+ (:y b) (/ (:width b)) 2)))))
 
 (defn colliding-with-anything?
   [entity entities]
@@ -214,7 +220,6 @@
 (init-keyboard)
 (reset-entities!)
 (tick)
-
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
