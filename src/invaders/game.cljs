@@ -1,9 +1,12 @@
 (ns invaders.game
   (:require [invaders.keyboard :refer [key-down? left right space]]
-            [invaders.draw :refer [canvas-size screen draw]]))
+            [invaders.draw :refer [canvas-size screen draw]]
+            [clojure.set :as cset]))
 
 ;; --- Entities ---
 (defonce entities (atom []))
+
+(defonce game-state (atom {:over false}))
 
 (defn add-entity!
   [entity]
@@ -113,7 +116,6 @@
   [a b]
   (not
    (or (identical? a b)
-
        (< (+ (:x a) (/ (:width a)) 2)
           (- (:x b) (/ (:width b)) 2))
 
@@ -128,7 +130,7 @@
 
 (defn colliding-with-anything?
   [entity entities]
-  (some #(colliding? entity %) entities))
+  (some #(if (colliding? entity %) [entity %]) entities))
 
 (defn in-screen?
   [entity]
@@ -141,14 +143,32 @@
 
 ;; --- Game Loop ---
 
+(defn is-game-over?
+  [entity-a entity-b]
+  (or (= :player (:type entity-a)) (= :player (:type entity-b))))
+
 (defn update-entities
   [entities]
-  (let [entities (filter #(and (in-screen? %)
-                               (not (colliding-with-anything? % entities))) entities)
+  (let [old-entities entities
+        col-entities-pair (keep
+                           #(let [coll-res (colliding-with-anything? % entities)]
+                              (if (and (in-screen? %)
+                                       (some? coll-res)) coll-res)) entities)
+        col-entities (map first col-entities-pair)
+        entities (cset/difference (set old-entities) (set col-entities))
         new-entities (atom [])]
-    (with-redefs [add-entity! #(swap! new-entities conj %)]
-      (into (mapv update-entity entities)
-            @new-entities))))
+    (do
+      ; (println col-entities)
+      ; (if (not-empty col-entities)
+      ;   (println col-entities " --- " (map (fn [elem] (println elem "--->")) col-entities)))
+      (if (and 
+           (not-empty col-entities-pair) 
+           (some #(do (println "--->" ) (is-game-over? (first %) (second %))) col-entities-pair))
+        ; (swap! game-state assoc :over false)
+        (println "GAME OVER"))
+      (with-redefs [add-entity! #(swap! new-entities conj %)]
+        (into (mapv update-entity entities)
+              @new-entities)))))
 
 (defn tick
   []
