@@ -6,12 +6,12 @@
 
   :min-lein-version "2.6.1"
 
-  :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.339"]
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [org.clojure/clojurescript "1.10.520"]
                  [org.clojure/core.async "0.3.443"
                   :exclusions [org.clojure/tools.reader]]]
 
-  :plugins [[lein-figwheel "0.5.17"]
+  :plugins [[lein-figwheel "0.5.18"]
             [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]]
 
   :source-paths ["src"]
@@ -54,7 +54,10 @@
              :css-dirs ["resources/public/css"] ;; watch and update CSS
 
              ;; Start an nREPL server into the running figwheel process
-             ;; :nrepl-port 7888
+             :nrepl-port 7888
+
+             :nrepl-middleware ["cider.nrepl/cider-middleware"
+                                "cider.piggieback/wrap-cljs-repl"]
 
              ;; Server Ring Handler (optional)
              ;; if you want to embed a ring handler into the figwheel http-kit
@@ -88,14 +91,12 @@
   ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
 
 
-  :profiles {:dev {:dependencies [[figwheel-sidecar "0.5.17"]
-                                  [com.cemerick/piggieback "0.2.1"]]
+  :profiles {:dev {:dependencies [[figwheel-sidecar "0.5.18"]
+                                  [cider/piggieback "0.4.0"]]
                    ;; need to add dev source path here to get user.clj loaded
                    :source-paths ["src" "dev"]
                    ;; for CIDER
-                   ;; :plugins [[cider/cider-nrepl "0.12.0"]]
+                   :plugins [[cider/cider-nrepl "0.21.1"]]
                    :repl-options {; for nREPL dev you really need to limit output
                                   :init (set! *print-length* 50)
-                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
-
-)
+                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}})

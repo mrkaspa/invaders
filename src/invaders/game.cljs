@@ -161,9 +161,10 @@
       ; (println col-entities)
       ; (if (not-empty col-entities)
       ;   (println col-entities " --- " (map (fn [elem] (println elem "--->")) col-entities)))
-      (if (and 
-           (not-empty col-entities-pair) 
-           (some #(do (println "--->" ) (is-game-over? (first %) (second %))) col-entities-pair))
+      (if (and
+           (not-empty col-entities-pair)
+           (some #(do (is-game-over? (first %) (second %)))
+            col-entities-pair))
         ; (swap! game-state assoc :over false)
         (println "GAME OVER"))
       (with-redefs [add-entity! #(swap! new-entities conj %)]
